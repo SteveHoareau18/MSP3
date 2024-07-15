@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="textview_desc">Vous n\'avez pas de courses à faire pour le moment</string>
+    <string name="btn_create_course">Créer une course</string>
+    <string name="textview_historic_title">Vous n\'avez pas d\'historique de courses…</string>
+</resources>
