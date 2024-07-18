@@ -40,6 +40,7 @@
             android:text="@string/btn_create_course"
             app:layout_constraintTop_toTopOf="parent"
             tools:text="@string/btn_create_course" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -51,19 +52,33 @@
             android:id="@+id/textview_historic_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="82dp"
-            android:text="@string/textview_historic_title"
+            android:layout_marginTop="48dp"
+            android:text="@string/textview_historic_title_todo"
             android:textAlignment="center"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            tools:layout_editor_absoluteX="0dp"
-            tools:text="@string/textview_historic_title" />
+            tools:text="@string/textview_historic_title_todo" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <ListView
         android:id="@+id/list_courses"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="#00FF0000" />
+        android:layout_height="262dp"
+        android:background="#FFFFFF">
+
+    </ListView>
+
+    <Button
+        android:id="@+id/btn_show_doCourse"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:background="#EC4899"
+        android:backgroundTint="#EC4899"
+        android:text="@string/btn_show_do_course"
+        tools:text="@string/btn_show_do_course" />
 
 </LinearLayout>

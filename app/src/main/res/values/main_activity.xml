@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="textview_desc">Vous n\'avez pas de courses à faire pour le moment</string>
+    <string name="textview_desc">Vous n\'avez pas de courses à faire (ou en-cours) pour le moment</string>
     <string name="btn_create_course">Créer une course</string>
-    <string name="textview_historic_title">Vous n\'avez pas d\'historique de courses…</string>
+    <string name="textview_historic_title_todo">Il n\'y a pas de courses pour le moment…</string>
+    <string name="textview_historic_title_do">Vous n\'avez pas d\'historique de courses déjà effectuée…</string>
+    <string name="btn_show_do_course">Voir les courses déjà effectuées</string>
 </resources>
