@@ -98,7 +98,15 @@ public class ProductDialog extends Dialog<ProductDialog.Page> {
                             button.setOnClickListener(v -> open(Page.EDIT));
                             return button;
                         }).build(),
-                        "Marquer comme pris", (dialog, which) -> dialog.cancel(),
+                        "Marquer comme pris", (dialog, which) -> {
+                            MainActivity.getActivityReference().get().getProductCrud(course).update(
+                                    () -> {
+                                        product.take();
+                                        return product;
+                                    }
+                            );
+                            Toast.makeText(getActivity(), "Vous avez pris votre produit", Toast.LENGTH_LONG).show();
+                        },
                         "Retour", (dialog, which) -> dialog.cancel());
                 break;
             case EDIT:
@@ -117,7 +125,7 @@ public class ProductDialog extends Dialog<ProductDialog.Page> {
                                     return textView;
                                 })
                                 .add(() -> {
-                                    input_quantity.setText(product.getQuantity()+"");
+                                    input_quantity.setText(product.getQuantity() + "");
                                     return input_quantity;
                                 })
                                 .add(() -> {
@@ -127,12 +135,23 @@ public class ProductDialog extends Dialog<ProductDialog.Page> {
                                 })
                                 .add(() -> {
                                     String value = "";
-                                    if(product.getUnit()!=null) input_unit.setText(product.getUnit());
+                                    if (product.getUnit() != null)
+                                        input_unit.setText(product.getUnit());
 
                                     input_unit.setText(value);
                                     return input_unit;
                                 }).build(),
-                        "Enregistrer", (dialog, which) -> dialog.cancel(),
+                        "Enregistrer", (dialog, which) -> MainActivity.getActivityReference().get().getProductCrud(course).update(() -> {
+                            if (input_name.getText().toString().isEmpty() || input_quantity.getText().toString().isEmpty()) {
+                                Toast.makeText(getActivity(), "Les champs nom et quantité sont requis.", Toast.LENGTH_LONG).show();
+                                dialog.cancel();
+                                return null;
+                            }
+                            product.setName(input_name.getText().toString());
+                            product.setQuantity(Integer.parseInt(input_quantity.getText().toString()));
+                            product.setUnit(input_unit.getText().toString());
+                            return product;
+                        }),
                         "Annuler", (dialog, which) -> dialog.cancel());
                 break;
             case DELETE:

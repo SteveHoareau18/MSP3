@@ -55,6 +55,19 @@ public class MainActivity extends Activity {
         return activityReference;
     }
 
+    public static boolean stop(SharedPreferences prefs) {
+        //TODO ring and stop
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+            SharedPreferences.Editor editor = prefs.edit();
+            editor.putBoolean(KEY.START.toString(), false);
+            editor.putLong(KEY.CHRONO_START.toString(), 0);
+            editor.putLong(KEY.CHRONO_ELAPSED.toString(), 0);
+            editor.apply();
+            return true;
+        }
+        return false;
+    }
+
     public TextView getHistoricTitle() {
         return historicTitle;
     }
@@ -114,5 +127,11 @@ public class MainActivity extends Activity {
 
     public Map<String, ?> getAll() {
         return this.getSharedPreferences(name, mode).getAll();
+    }
+
+    public enum KEY {
+        START,
+        CHRONO_START,
+        CHRONO_ELAPSED;
     }
 }

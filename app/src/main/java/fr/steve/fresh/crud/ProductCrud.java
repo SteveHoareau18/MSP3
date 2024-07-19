@@ -39,6 +39,7 @@ public class ProductCrud extends Crud<Product, ProductDialog> {
 
         CourseActivity.getActivityReference().get().getListProducts().setOnItemClickListener((parent, view, position, id) -> {
             Product selectedProduct = getSortedProductInCourse().get(position);
+            if (selectedProduct.getStatus() == Product.Status.IS_TAKE) return;
 
             getDialog().setCourse(course).setActivity(CourseActivity.getActivityReference().get())
                     .setProduct(selectedProduct).open(ProductDialog.Page.GET);
@@ -85,6 +86,8 @@ public class ProductCrud extends Crud<Product, ProductDialog> {
         Product product = productSupplier.get();
         if (product.getName().isEmpty()) product.setName("Produit");
         getRepository().add(product);
+        Toast.makeText(getActivity(), "Le produit " + product.getName() + " a été mis à jour", Toast.LENGTH_LONG).show();
+        reload();
     }
 
     @Override
@@ -103,6 +106,16 @@ public class ProductCrud extends Crud<Product, ProductDialog> {
 
     public List<Product> getSortedProductInCourse() {
         List<Product> sortedProducts = getRepository().findAll();
+        sortedProducts.sort((o1, o2) -> {
+            if (o1.getTakeDate() == null && o2.getTakeDate() == null) {
+                return o1.getCreateDate().compareTo(o2.getCreateDate());
+            } else {
+                if (o1.getTakeDate() != null) {
+                    return -1;
+                }
+                return 1;
+            }
+        });
         sortedProducts = sortedProducts.stream().filter(x -> x.getCourseId() == course.getId()).collect(Collectors.toList());
         return sortedProducts;
     }
@@ -130,6 +143,10 @@ public class ProductCrud extends Crud<Product, ProductDialog> {
 
             productLine.setText(product.getName() + " " + product.getQuantity() + " " + product.getUnit());
             productLineDate.setText("Crée le: " + MainActivity.getSimpleDateFormat().format(product.getCreateDate()));
+
+            if (product.getStatus() == Product.Status.IS_TAKE && product.getTakeDate() != null) {
+                productLineDate.setText(productLineDate.getText() + " et pris le: " + MainActivity.getSimpleDateFormat().format(product.getTakeDate()));
+            }
 
             return convertView;
         }

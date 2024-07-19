@@ -74,6 +74,9 @@ public class CourseCrud extends Crud<Course, CourseDialog> {
     public void update(Supplier<Course> courseSupplier) {
         Course course = courseSupplier.get();
         if (course.getName().isEmpty()) course.setName("Course");
+        if (course.getToDoDate() != null) {
+            //start reveil;
+        }
         getRepository().add(course);
         reload();
     }

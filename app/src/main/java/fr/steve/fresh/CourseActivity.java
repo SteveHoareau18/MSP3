@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.lang.ref.WeakReference;
 
@@ -77,10 +78,12 @@ public class CourseActivity extends Activity {
                             .getDialog().setCourse(course).setActivity(this)
                             .open(ProductDialog.Page.MAIN));
 
-            findViewById(R.id.btn_back).setOnClickListener(v -> {
-                Intent intent = new Intent(CourseActivity.this, MainActivity.class);
-                startActivity(intent);
-            });
+            findViewById(R.id.btn_finish).setOnClickListener(v ->
+                    MainActivity.getActivityReference().get().getCourseCrud().update(() -> {
+                        course.setStatus(Course.Status.FINISH);
+                        Toast.makeText(this, "Succès, vous avez terminé votre course !", Toast.LENGTH_LONG).show();
+                        return course;
+                    }));
         });
 
         findViewById(R.id.btn_back).setOnClickListener(v -> {
