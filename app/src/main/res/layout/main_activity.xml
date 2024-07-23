@@ -18,14 +18,6 @@
         android:textStyle="bold|italic"
         tools:text="Fresh" />
 
-    <TextView
-        android:id="@+id/textview_desc"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/textview_desc"
-        android:textAlignment="center"
-        tools:text="@string/textview_desc" />
-
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
