@@ -2,24 +2,27 @@ package fr.steve.fresh.entity;
 
 import androidx.annotation.NonNull;
 
-import java.text.SimpleDateFormat;
+import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
-import java.util.Locale;
-import java.util.Optional;
+import java.util.List;
 
+import fr.steve.fresh.MainActivity;
 import fr.steve.fresh.service.factory.Entity;
 
-public class Course extends Entity {
+public class Course extends Entity implements Serializable {
 
     private String name;
     private Date createDate;
-    private Optional<Date> toDoDate, doDate;
+    private Date toDoDate, doDate;
+    private Status status;
+    private List<Product> productList;
 
     public Course() {
         super();
         this.createDate = new Date();
-        this.toDoDate = Optional.empty();
-        this.doDate = Optional.empty();
+        this.status = Status.TO_DO;
+        this.productList = new ArrayList<>();
     }
 
     public String getName() {
@@ -38,32 +41,39 @@ public class Course extends Entity {
         this.createDate = createDate;
     }
 
-    public Optional<Date> getToDoDate() {
+    public Date getToDoDate() {
         return toDoDate;
     }
 
     public void setToDoDate(Date toDoDate) {
-        this.toDoDate = Optional.of(toDoDate);
+        this.toDoDate = toDoDate;
     }
 
-    public Optional<Date> getDoDate() {
+    public Date getDoDate() {
         return doDate;
     }
 
     public void setDoDate(Date doDate) {
-        this.doDate = Optional.of(doDate);
+        this.doDate = doDate;
+    }
+
+    public Status getStatus() {
+        return status;
+    }
+
+    public void setStatus(Status status) {
+        if (status == Status.FINISH) setDoDate(new Date());
+        this.status = status;
+    }
+
+    public List<Product> getProductList() {
+        return productList;
     }
 
     @NonNull
     @Override
     public String toString() {
-        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.getDefault());
-        return "Course{" +
-                "name='" + name + '\'' +
-                ", createDate=" + (createDate != null ? sdf.format(createDate) : "null") +
-                ", toDoDate=" + (toDoDate.isPresent() ? sdf.format(toDoDate) : "null") +
-                ", doDate=" + (doDate.isPresent() ? sdf.format(doDate) : "null") +
-                '}';
+        return MainActivity.COURSE_SERIALIZER.serialize(this);
     }
 
     @Override
@@ -73,5 +83,11 @@ public class Course extends Entity {
             return this.createDate.compareTo(course.getCreateDate());
         }
         throw new RuntimeException("Unbound entity in Course");
+    }
+
+    public enum Status {
+        TO_DO,
+        DOING,
+        FINISH
     }
 }

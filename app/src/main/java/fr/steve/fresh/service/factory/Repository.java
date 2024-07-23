@@ -16,18 +16,16 @@ public abstract class Repository<T extends Entity> {
 
     private final List<T> list;
     private final Gson gson;
-    private final MainActivity mainActivity;
 
-    public Repository(List<T> list, MainActivity mainActivity) {
+    public Repository(List<T> list) {
         this.list = list;
         this.gson = new Gson();
-        this.mainActivity = mainActivity;
     }
 
     public List<T> findAll() {
         List<T> entities = new ArrayList<>();
         Class<T> clazz = getEntityClass();
-        Map<String, ?> allEntries = mainActivity.getAll();
+        Map<String, ?> allEntries = MainActivity.getActivityReference().get().getAll();
         for (Map.Entry<String, ?> entry : allEntries.entrySet()) {
             if (entry.getKey().startsWith(clazz.getName())) {
                 String json = (String) entry.getValue();
@@ -39,6 +37,7 @@ public abstract class Repository<T extends Entity> {
     }
 
     public void add(T entity) {
+        this.list.stream().filter(x -> x.getId() == entity.getId()).findFirst().ifPresent(this.list::remove);
         this.list.add(entity);
         persist(entity);
     }
@@ -52,6 +51,7 @@ public abstract class Repository<T extends Entity> {
         persist(entity);
     }
 
+    @Deprecated(forRemoval = true)
     public <U extends ListView> void setAdapter(U layout, ArrayAdapter<T> adapter) {
         layout.setAdapter(adapter);
     }
@@ -59,17 +59,17 @@ public abstract class Repository<T extends Entity> {
     private void persist(T entity) {
         String key = entity.getClass().getName() + "_" + entity.getId();
         String json = gson.toJson(entity);
-        mainActivity.edit().putString(key, json).apply();
+        MainActivity.getActivityReference().get().edit().putString(key, json).apply();
     }
 
     @SuppressWarnings("unchecked")
-    public T findOneById(int id) {
+    public Optional<T> findOneById(int id) {
         String key = Entity.class.getName() + "_" + id;
-        String json = mainActivity.getString(key, null);
+        String json = MainActivity.getActivityReference().get().getString(key, null);
         if (json != null) {
-            return gson.fromJson(json, (Class<T>) Entity.class);
+            return Optional.ofNullable(gson.fromJson(json, (Class<T>) Entity.class));
         }
-        return null;
+        return Optional.empty();
     }
 
     protected abstract Class<T> getEntityClass();
