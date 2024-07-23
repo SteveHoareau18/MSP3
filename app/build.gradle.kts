@@ -41,13 +41,15 @@ dependencies {
     implementation(libs.gson)
     implementation(libs.runtime.android)
 
-    testImplementation(libs.junit)
+    testImplementation(libs.junit.jupiter.api)
     testImplementation(libs.mockito.core)
     testImplementation(libs.robolectric.robolectric)
     testImplementation(libs.core)
+    testImplementation(libs.junit.junit)
 
     // For Android Instrumented Tests
-    androidTestImplementation(libs.junit.v113)
+    androidTestImplementation(libs.junit.jupiter.api)
+
     androidTestImplementation(libs.espresso.core.v340)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)

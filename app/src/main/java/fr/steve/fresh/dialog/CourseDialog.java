@@ -29,6 +29,22 @@ public class CourseDialog extends Dialog<CourseDialog.Page> {
         return this;
     }
 
+    /**
+     * Opens a specific page and performs actions based on the page type.
+     * <p>
+     * Depending on the provided page, this method will display different dialogs for creating a new course,
+     * editing the course date and time, viewing the list of products, and viewing or editing course details.
+     * </p>
+     *
+     * @param page the page to be opened. The possible values are:
+     *             <ul>
+     *             <li>MAIN: Opens a dialog to create a new course.</li>
+     *             <li>EDIT_DATE: Opens a dialog to edit the course date.</li>
+     *             <li>EDIT_TIME: Opens a dialog to edit the course time.</li>
+     *             <li>PRODUCTS: Starts an activity to view the course products.</li>
+     *             <li>EDIT_ALL: Opens a dialog to show a summary, edit the name, or mark the course as completed.</li>
+     *             </ul>
+     */
     @SuppressLint("SetTextI18n")
     public void open(Page page) {
         switch (page) {

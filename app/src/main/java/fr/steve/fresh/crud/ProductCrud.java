@@ -13,6 +13,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -22,6 +23,7 @@ import fr.steve.fresh.crud.crud.Crud;
 import fr.steve.fresh.dialog.ProductDialog;
 import fr.steve.fresh.entity.Course;
 import fr.steve.fresh.entity.Product;
+import fr.steve.fresh.repository.ProductRepository;
 import fr.steve.fresh.service.factory.Repository;
 
 public class ProductCrud extends Crud<Product, ProductDialog> {
@@ -53,10 +55,22 @@ public class ProductCrud extends Crud<Product, ProductDialog> {
     }
 
     public void create(String name, int quantity, String unit) {
-        Product product = new Product(course.getId());
-        product.setName(name.isEmpty() ? "Course" : name);
-        product.setQuantity(quantity);
-        product.setUnit(unit.isEmpty() ? "" : unit);
+        if(!canAddOrUpdate(name,quantity)) return;
+
+        AtomicBoolean find = new AtomicBoolean(true);
+        Product product = ((ProductRepository)getRepository()).findByNameInCourse(name, course).orElseGet(()->{
+            find.set(false);
+            Product new_product = new Product(course.getId());
+            new_product.setName(name);
+            new_product.setQuantity(quantity);
+            new_product.setUnit(unit.isEmpty() ? "" : unit);
+            return new_product;
+        });
+
+        if(find.get()){
+            product.setQuantity(product.getQuantity()+quantity);
+        }
+
         getRepository().add(product);
         Toast.makeText(getActivity(), "Le produit: " + product.getName() + " a été ajouté dans la course: " + course.getName(), Toast.LENGTH_SHORT).show();
         reload();
@@ -64,13 +78,7 @@ public class ProductCrud extends Crud<Product, ProductDialog> {
 
     @Override
     public void create(String name) {
-        Product product = new Product(course.getId());
-        product.setName(name.isEmpty() ? "Course" : name);
-        product.setQuantity(0);
-        product.setUnit("");
-        Toast.makeText(getActivity(), "Le produit: " + product.getName() + " a été ajouté dans la course: " + course.getName(), Toast.LENGTH_SHORT).show();
-        getRepository().add(product);
-        reload();
+        create(name,1,"");
     }
 
     @Override
@@ -84,10 +92,24 @@ public class ProductCrud extends Crud<Product, ProductDialog> {
     @Override
     public void update(Supplier<Product> productSupplier) {
         Product product = productSupplier.get();
-        if (product.getName().isEmpty()) product.setName("Produit");
+
+        if(!canAddOrUpdate(product.getName(),product.getQuantity())) return;
+
         getRepository().add(product);
         Toast.makeText(getActivity(), "Le produit " + product.getName() + " a été mis à jour", Toast.LENGTH_LONG).show();
         reload();
+    }
+
+    private boolean canAddOrUpdate(String name, int quantity){
+        if(name.isEmpty() || name.toCharArray().length == 1){
+            Toast.makeText(getActivity(), "Le nom du produit ne doit être vide et doit avoir au moins 2 lettres", Toast.LENGTH_LONG).show();
+            return false;
+        }
+        if(quantity < 1){
+            Toast.makeText(getActivity(), "La quantité doit être positive et supérieure ou égale à 1", Toast.LENGTH_LONG).show();
+            return false;
+        }
+        return true;
     }
 
     @Override

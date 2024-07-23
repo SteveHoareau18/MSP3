@@ -53,10 +53,21 @@ public class CourseCrud extends Crud<Course, CourseDialog> {
         reload();
     }
 
+    /**
+     * Creates a new course with the given name.
+     * <p>
+     * If the provided name is empty, the course will be named "Course" by default.
+     * After creation, the course is added to the repository and a toast message
+     * is displayed to inform the user that the course has been created.
+     * Finally, the view is reloaded to reflect the changes.
+     * </p>
+     *
+     * @param name the name of the course to be created. If empty, defaults to "Course".
+     */
     @Override
     public void create(String name) {
         Course course = new Course();
-        course.setName(name.isEmpty() ? "Course" : name);
+        course.setName(name.isEmpty() || name.toCharArray().length == 1 ? "Course" : name);
         getRepository().add(course);
         Toast.makeText(getActivity(), "La course: " + course.getName() + " a été crée.", Toast.LENGTH_SHORT).show();
         reload();

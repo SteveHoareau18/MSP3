@@ -36,6 +36,17 @@ public abstract class Repository<T extends Entity> {
         return entities;
     }
 
+    /**
+     * Adds an entity to the list. If an entity with the same ID already exists in the list,
+     * it is removed before the new entity is added.
+     * <p>
+     * This method ensures that the list does not contain duplicate entities based on their IDs.
+     * After adding the entity to the list, the entity is persisted.
+     * </p>
+     *
+     * @param entity the entity to be added to the list. If an entity with the same ID exists,
+     *               it is replaced by the new entity.
+     */
     public void add(T entity) {
         this.list.stream().filter(x -> x.getId() == entity.getId()).findFirst().ifPresent(this.list::remove);
         this.list.add(entity);
@@ -56,6 +67,16 @@ public abstract class Repository<T extends Entity> {
         layout.setAdapter(adapter);
     }
 
+    /**
+     * Persists the given entity by converting it to a JSON string and storing it
+     * in the shared preferences using a unique key.
+     * <p>
+     * The key is constructed using the class name and the ID of the entity to ensure uniqueness.
+     * </p>
+     *
+     * @param entity the entity to be persisted. It is converted to a JSON string and stored
+     *               in the shared preferences.
+     */
     private void persist(T entity) {
         String key = entity.getClass().getName() + "_" + entity.getId();
         String json = gson.toJson(entity);
