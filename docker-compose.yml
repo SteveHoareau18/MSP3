@@ -1,0 +1,30 @@
+version: '3'
+services:
+  jenkins:
+    image: jenkins/jenkins:lts
+    container_name: jenkins
+    ports:
+      - "8080:8080"
+      - "50000:50000"
+    volumes:
+      - jenkins_data:/var/jenkins_home
+    networks:
+      - jenkins_network
+
+  apache:
+    image: httpd:latest
+    container_name: apache
+    ports:
+      - "80:80"
+    volumes:
+      - ./www:/usr/local/apache2/htdocs/
+    networks:
+      - jenkins_network
+
+volumes:
+  jenkins_data:
+
+
+networks:
+  jenkins_network:
+    driver: bridge
