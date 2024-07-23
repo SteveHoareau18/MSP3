@@ -55,6 +55,10 @@ public class MainActivity extends Activity {
         return activityReference;
     }
 
+    public static void setActivityReference(WeakReference<MainActivity> weakReference) {
+        activityReference = weakReference;
+    }
+
     public static boolean stop(SharedPreferences prefs) {
         //TODO ring and stop
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {

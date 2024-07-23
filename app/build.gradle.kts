@@ -14,6 +14,9 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        testOptions {
+            unitTests.isIncludeAndroidResources = true
+        }
     }
 
     buildTypes {
@@ -32,11 +35,19 @@ android {
 }
 
 dependencies {
-
     implementation(libs.appcompat)
     implementation(libs.material)
     implementation(libs.gson)
+    implementation(libs.runtime.android)
+
     testImplementation(libs.junit)
+    testImplementation(libs.mockito.core)
+    testImplementation(libs.robolectric.robolectric)
+    testImplementation(libs.core)
+
+    // For Android Instrumented Tests
+    androidTestImplementation(libs.junit.v113)
+    androidTestImplementation(libs.espresso.core.v340)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
 }

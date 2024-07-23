@@ -110,7 +110,7 @@ public class ProductDialog extends Dialog<ProductDialog.Page> {
                         "Retour", (dialog, which) -> dialog.cancel());
                 break;
             case EDIT:
-                buildAlertDialog("Produit: " + product.getQuantity() + product.getName() + (product.getUnit().isEmpty() ? "" : product.getUnit()),
+                buildAlertDialog("Produit: " + product.getQuantity() + product.getName() + (product.getUnit() == null || product.getUnit().isEmpty() ? "" : product.getUnit()),
                         () -> new LinearLayoutBuilder(getActivity()).add(() -> {
                                     TextView textView = new TextView(getActivity());
                                     textView.setText("Nom: ");

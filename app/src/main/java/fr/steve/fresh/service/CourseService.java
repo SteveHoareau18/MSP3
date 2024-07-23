@@ -18,9 +18,9 @@ import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationCompat;
 
-import fr.steve.fresh.runnable.CourseRunnable;
 import fr.steve.fresh.MainActivity;
 import fr.steve.fresh.R;
+import fr.steve.fresh.runnable.CourseRunnable;
 
 public class CourseService extends Service {
 
