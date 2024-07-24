@@ -4,8 +4,8 @@ import android.app.Activity;
 
 import java.util.Optional;
 
-import fr.steve.fresh.entity.Course;
-import fr.steve.fresh.repository.CourseRepository;
+import fr.steve.fresh.entity.Errand;
+import fr.steve.fresh.repository.ErrandRepository;
 import fr.steve.fresh.service.factory.Entity;
 import fr.steve.fresh.service.manager.EntityManager;
 
@@ -21,10 +21,10 @@ public class AdapterManager {
 
     @SuppressWarnings("unchecked")
     public <T extends Entity> Optional<AdapterBundleLayout<?, T>> getEntity(Class<T> clazz) {
-        if (clazz == Course.class) {
-            return Optional.of((AdapterBundleLayout<?, T>) new AdapterBundleLayout<CourseRepository, Course>(activity)
+        if (clazz == Errand.class) {
+            return Optional.of((AdapterBundleLayout<?, T>) new AdapterBundleLayout<ErrandRepository, Errand>(activity)
                     .setLayout(android.R.layout.simple_spinner_item)
-                    .setItems((CourseRepository) entityManager.getRepository(Course.class).get()));
+                    .setItems((ErrandRepository) entityManager.getRepository(Errand.class).get()));
         }
         return Optional.empty();
     }
