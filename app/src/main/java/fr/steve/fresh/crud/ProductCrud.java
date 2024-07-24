@@ -227,7 +227,7 @@ public class ProductCrud extends Crud<Product, ProductDialog> {
 
             assert product != null;
 
-            productLine.setText(product.getName() + " " + product.getQuantity() + " " + product.getUnit());
+            productLine.setText(product.getQuantity() + " " + product.getUnit() + " " + product.getName());
             productLineDate.setText("Crée le: " + MainActivity.getSimpleDateFormat().format(product.getCreateDate()));
 
             if (product.getStatus() == Product.Status.IS_TAKE && product.getTakeDate() != null) {
