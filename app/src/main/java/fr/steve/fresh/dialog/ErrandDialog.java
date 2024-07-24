@@ -33,6 +33,10 @@ public class ErrandDialog extends Dialog<ErrandDialog.Page> {
         super(activity);
     }
 
+    public Errand getErrand() {
+        return this.errand;
+    }
+
     /**
      * Sets the Errand object to be used in the dialog.
      *

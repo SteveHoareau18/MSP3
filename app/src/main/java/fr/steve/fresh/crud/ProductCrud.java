@@ -79,7 +79,7 @@ public class ProductCrud extends Crud<Product, ProductDialog> {
      * @param unit     the unit of the product
      */
     public void create(String name, int quantity, String unit) {
-        if (!canAddOrUpdate(name, quantity)) return;
+        if (!canAddOrUpdate(name, quantity, unit)) return;
 
         AtomicBoolean find = new AtomicBoolean(true);
         Product product = ((ProductRepository) getRepository()).findByNameInCourse(name, errand).orElseGet(() -> {
@@ -117,7 +117,7 @@ public class ProductCrud extends Crud<Product, ProductDialog> {
     public void update(Supplier<Product> productSupplier) {
         Product product = productSupplier.get();
 
-        if (!canAddOrUpdate(product.getName(), product.getQuantity())) return;
+        if (!canAddOrUpdate(product.getName(), product.getQuantity(), product.getUnit())) return;
 
         AtomicBoolean find = new AtomicBoolean(true);
         Product findProduct = ((ProductRepository) getRepository()).findByNameInCourse(product.getName(), errand).orElseGet(() -> {
@@ -142,19 +142,31 @@ public class ProductCrud extends Crud<Product, ProductDialog> {
      *
      * @param name     the name of the product
      * @param quantity the quantity of the product
+     * @param unit     the unit of the product
      * @return true if the product can be added or updated, false otherwise
      */
-    private boolean canAddOrUpdate(String name, int quantity) {
+    public boolean canAddOrUpdate(String name, int quantity, String unit) {
+        name = name.trim();
         String regex = "^(?=(?:.*[A-Za-z]){2})[A-Za-z0-9]{1,30}$";
         Pattern pattern = Pattern.compile(regex);
-        Matcher matcher = pattern.matcher(name);
-        boolean matches = matcher.matches();
-        if (!matches) {
-            Toast.makeText(getActivity(), "Le nom du produit ne doit être vide et doit avoir au moins 2 lettres et ne doit pas dépasser 30 caractères", Toast.LENGTH_LONG).show();
+        Matcher matcherName = pattern.matcher(name);
+
+        String regexUnit = "^(?=.*[A-Za-z])[A-Za-z0-9]{1,15}$";
+        Pattern patternUnit = Pattern.compile(regexUnit);
+        Matcher matcherUnit = patternUnit.matcher(unit);
+
+        boolean matchesName = matcherName.matches();
+        boolean matchesUnit = matcherUnit.matches();
+        if (!matchesName) {
+            Toast.makeText(getActivity(), "Le nom du produit ne doit pas être vide et doit avoir au moins 2 lettres et ne doit pas dépasser 30 caractères", Toast.LENGTH_LONG).show();
             return false;
         }
-        if (quantity < 1) {
-            Toast.makeText(getActivity(), "La quantité doit être positive et supérieure ou égale à 1", Toast.LENGTH_LONG).show();
+        if (!unit.isEmpty() && !matchesUnit) {
+            Toast.makeText(getActivity(), "L'unité du produit peut être au moins 1 lettre et ne doit pas dépasser 15 caractères", Toast.LENGTH_LONG).show();
+            return false;
+        }
+        if (quantity < 1 || quantity > 1000) {
+            Toast.makeText(getActivity(), "La quantité doit être positive et supérieure ou égale à 1 et inférieur à 1000", Toast.LENGTH_LONG).show();
             return false;
         }
         return true;
@@ -227,7 +239,7 @@ public class ProductCrud extends Crud<Product, ProductDialog> {
 
             assert product != null;
 
-            productLine.setText(product.getName() + " " + product.getQuantity() + " " + product.getUnit());
+            productLine.setText(product.getQuantity() + " " + product.getUnit() + " " + product.getName());
             productLineDate.setText("Crée le: " + MainActivity.getSimpleDateFormat().format(product.getCreateDate()));
 
             if (product.getStatus() == Product.Status.IS_TAKE && product.getTakeDate() != null) {
