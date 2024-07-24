@@ -34,8 +34,5 @@ jobs:
     - name: Build with Gradle
       run: ./gradlew build
 
-    - name: Upload build artifacts
-      uses: actions/upload-artifact@v3
-      with:
-        name: build
-        path: app/build/outputs/
+    - name: Run unit tests
+      run: ./gradlew test
