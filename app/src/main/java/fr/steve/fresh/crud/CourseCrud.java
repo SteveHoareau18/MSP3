@@ -13,6 +13,8 @@ import androidx.annotation.Nullable;
 
 import java.util.List;
 import java.util.function.Supplier;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import fr.steve.fresh.MainActivity;
@@ -22,10 +24,21 @@ import fr.steve.fresh.dialog.CourseDialog;
 import fr.steve.fresh.entity.Course;
 import fr.steve.fresh.service.factory.Repository;
 
+/**
+ * CourseCrud class handles CRUD operations for Course entities.
+ * This class extends Crud and provides specific implementations
+ * for creating, reading, updating, and deleting courses.
+ */
 public class CourseCrud extends Crud<Course, CourseDialog> {
 
     private Course.Status filter;
 
+    /**
+     * Constructs a CourseCrud with the specified activity and repository.
+     *
+     * @param activity         the activity context
+     * @param courseRepository the repository for Course entities
+     */
     public CourseCrud(Activity activity, Repository<Course> courseRepository) {
         super(courseRepository, activity, new CourseDialog(activity), new CourseAdapter(activity, courseRepository.findAll()));
 
@@ -67,12 +80,30 @@ public class CourseCrud extends Crud<Course, CourseDialog> {
     @Override
     public void create(String name) {
         Course course = new Course();
-        course.setName(name.isEmpty() || name.toCharArray().length == 1 ? "Course" : name);
+        String regex = "^(?=(?:.*[A-Za-z]){2})[A-Za-z0-9]{1,30}$";
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(name);
+        boolean matches = matcher.matches();
+        if (matches) {
+            course.setName(name.trim());
+        } else {
+            course.setName("Course");
+            Toast.makeText(getActivity(), "La course ne peut pas être nommé ainsi, par défaut elle est donc nommé: Course", Toast.LENGTH_LONG).show();
+        }
         getRepository().add(course);
         Toast.makeText(getActivity(), "La course: " + course.getName() + " a été crée.", Toast.LENGTH_SHORT).show();
         reload();
     }
 
+    /**
+     * Reads a course by its ID.
+     * <p>
+     * If the course is not found, a toast message is displayed.
+     * </p>
+     *
+     * @param id the ID of the course to be read
+     * @return the Course object if found, null otherwise
+     */
     @Override
     public Course read(int id) {
         return getRepository().findOneById(id).orElseGet(() -> {
@@ -81,6 +112,15 @@ public class CourseCrud extends Crud<Course, CourseDialog> {
         });
     }
 
+    /**
+     * Updates the course information using the provided supplier.
+     * <p>
+     * If the course name is empty, it defaults to "Course".
+     * After updating, the repository is updated and the view is reloaded.
+     * </p>
+     *
+     * @param courseSupplier a supplier that provides the Course object to be updated
+     */
     @Override
     public void update(Supplier<Course> courseSupplier) {
         Course course = courseSupplier.get();
@@ -92,11 +132,19 @@ public class CourseCrud extends Crud<Course, CourseDialog> {
         reload();
     }
 
+    /**
+     * Deletes the specified course.
+     *
+     * @param course the Course object to be deleted
+     */
     @Override
-    public void delete() {
-
+    public void delete(Course course) {
+        // Implementation missing in the provided code
     }
 
+    /**
+     * Reloads the view to reflect changes in the course list.
+     */
     public void reload() {
         boolean hasItems = !getSortedCourses().isEmpty();
         MainActivity.getActivityReference().get().getHistoricTitle().setText(hasItems ? getTitle() : getActivity().getString(R.string.textview_historic_title_todo));
@@ -110,6 +158,12 @@ public class CourseCrud extends Crud<Course, CourseDialog> {
         setNextFilter();
     }
 
+    /**
+     * Sets the next filter status for courses.
+     * <p>
+     * Toggles between TO_DO and FINISH statuses.
+     * </p>
+     */
     public void setNextFilter() {
         if (filter == Course.Status.FINISH) {
             setFilter(Course.Status.TO_DO);
@@ -118,14 +172,32 @@ public class CourseCrud extends Crud<Course, CourseDialog> {
         }
     }
 
+    /**
+     * Gets the current filter status for courses.
+     *
+     * @return the current filter status
+     */
     public Course.Status getFilter() {
         return filter;
     }
 
+    /**
+     * Sets the filter status for courses.
+     *
+     * @param filter the filter status to be set
+     */
     public void setFilter(Course.Status filter) {
         this.filter = filter;
     }
 
+    /**
+     * Gets the sorted list of courses based on the current filter.
+     * <p>
+     * Courses are sorted by their to-do date, and filtered by their status.
+     * </p>
+     *
+     * @return the sorted list of courses
+     */
     public List<Course> getSortedCourses() {
         List<Course> sortedCourses = getRepository().findAll();
         sortedCourses.sort((o1, o2) -> {
@@ -143,7 +215,11 @@ public class CourseCrud extends Crud<Course, CourseDialog> {
         return sortedCourses;
     }
 
-
+    /**
+     * Gets the title for the course list based on the current filter.
+     *
+     * @return the title for the course list
+     */
     public String getTitle() {
         if (getFilter() == Course.Status.TO_DO) {
             return "Prochaines courses à faire: ";
@@ -153,6 +229,11 @@ public class CourseCrud extends Crud<Course, CourseDialog> {
         return "";
     }
 
+    /**
+     * Gets the button text for toggling the course list view based on the current filter.
+     *
+     * @return the button text for toggling the course list view
+     */
     public String getButtonText() {
         if (getFilter() == Course.Status.TO_DO) {
             return "Voir les courses déjà effectuées";
@@ -162,13 +243,29 @@ public class CourseCrud extends Crud<Course, CourseDialog> {
         return "";
     }
 
-
+    /**
+     * CourseAdapter class provides a custom adapter for displaying Course entities in a list view.
+     */
     public static class CourseAdapter extends ArrayAdapter<Course> {
 
+        /**
+         * Constructs a CourseAdapter with the specified activity and list of courses.
+         *
+         * @param activity the activity context
+         * @param courses  the list of courses
+         */
         public CourseAdapter(@NonNull Activity activity, @NonNull List<Course> courses) {
             super(activity.getApplicationContext(), 0, courses);
         }
 
+        /**
+         * Gets the view for a specific item in the list.
+         *
+         * @param position    the position of the item in the list
+         * @param convertView the recycled view to populate
+         * @param parent      the parent view group
+         * @return the view for the specified item
+         */
         @NonNull
         @Override
         public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {

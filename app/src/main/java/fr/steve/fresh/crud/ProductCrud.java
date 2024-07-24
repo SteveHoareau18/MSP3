@@ -15,6 +15,8 @@ import androidx.annotation.Nullable;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Supplier;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import fr.steve.fresh.CourseActivity;
@@ -26,14 +28,30 @@ import fr.steve.fresh.entity.Product;
 import fr.steve.fresh.repository.ProductRepository;
 import fr.steve.fresh.service.factory.Repository;
 
+/**
+ * The type ProductCrud.
+ * Manages CRUD operations for products in a course.
+ */
 public class ProductCrud extends Crud<Product, ProductDialog> {
 
     private Course course;
 
+    /**
+     * Instantiates a new ProductCrud.
+     *
+     * @param activity          the activity
+     * @param productRepository the product repository
+     */
     public ProductCrud(Activity activity, Repository<Product> productRepository) {
         super(productRepository, activity, new ProductDialog(activity), new ProductCrud.ProductAdapter(activity, productRepository.findAll()));
     }
 
+    /**
+     * Sets the course.
+     *
+     * @param course the course
+     * @return the ProductCrud instance
+     */
     public ProductCrud setCourse(Course course) {
         this.course = course;
 
@@ -46,7 +64,6 @@ public class ProductCrud extends Crud<Product, ProductDialog> {
             getDialog().setCourse(course).setActivity(CourseActivity.getActivityReference().get())
                     .setProduct(selectedProduct).open(ProductDialog.Page.GET);
 
-
             reload();
         });
 
@@ -54,21 +71,28 @@ public class ProductCrud extends Crud<Product, ProductDialog> {
         return this;
     }
 
+    /**
+     * Creates a new product.
+     *
+     * @param name     the name of the product
+     * @param quantity the quantity of the product
+     * @param unit     the unit of the product
+     */
     public void create(String name, int quantity, String unit) {
-        if(!canAddOrUpdate(name,quantity)) return;
+        if (!canAddOrUpdate(name, quantity)) return;
 
         AtomicBoolean find = new AtomicBoolean(true);
-        Product product = ((ProductRepository)getRepository()).findByNameInCourse(name, course).orElseGet(()->{
+        Product product = ((ProductRepository) getRepository()).findByNameInCourse(name, course).orElseGet(() -> {
             find.set(false);
             Product new_product = new Product(course.getId());
-            new_product.setName(name);
+            new_product.setName(name.trim());
             new_product.setQuantity(quantity);
             new_product.setUnit(unit.isEmpty() ? "" : unit);
             return new_product;
         });
 
-        if(find.get()){
-            product.setQuantity(product.getQuantity()+quantity);
+        if (find.get()) {
+            product.setQuantity(product.getQuantity() + quantity);
         }
 
         getRepository().add(product);
@@ -78,7 +102,7 @@ public class ProductCrud extends Crud<Product, ProductDialog> {
 
     @Override
     public void create(String name) {
-        create(name,1,"");
+        create(name, 1, "");
     }
 
     @Override
@@ -93,19 +117,43 @@ public class ProductCrud extends Crud<Product, ProductDialog> {
     public void update(Supplier<Product> productSupplier) {
         Product product = productSupplier.get();
 
-        if(!canAddOrUpdate(product.getName(),product.getQuantity())) return;
+        if (!canAddOrUpdate(product.getName(), product.getQuantity())) return;
+
+        AtomicBoolean find = new AtomicBoolean(true);
+        Product findProduct = ((ProductRepository) getRepository()).findByNameInCourse(product.getName(), course).orElseGet(() -> {
+            find.set(false);
+            return product;
+        });
+
+        int new_quantity = 0;
+        if (find.get() && findProduct.getId() != product.getId()) {
+            new_quantity += findProduct.getQuantity();
+            delete(findProduct);
+        }
+        product.setQuantity(product.getQuantity() + new_quantity);
 
         getRepository().add(product);
         Toast.makeText(getActivity(), "Le produit " + product.getName() + " a été mis à jour", Toast.LENGTH_LONG).show();
         reload();
     }
 
-    private boolean canAddOrUpdate(String name, int quantity){
-        if(name.isEmpty() || name.toCharArray().length == 1){
-            Toast.makeText(getActivity(), "Le nom du produit ne doit être vide et doit avoir au moins 2 lettres", Toast.LENGTH_LONG).show();
+    /**
+     * Checks if a product can be added or updated.
+     *
+     * @param name     the name of the product
+     * @param quantity the quantity of the product
+     * @return true if the product can be added or updated, false otherwise
+     */
+    private boolean canAddOrUpdate(String name, int quantity) {
+        String regex = "^(?=(?:.*[A-Za-z]){2})[A-Za-z0-9]{1,30}$";
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(name);
+        boolean matches = matcher.matches();
+        if (!matches) {
+            Toast.makeText(getActivity(), "Le nom du produit ne doit être vide et doit avoir au moins 2 lettres et ne doit pas dépasser 30 caractères", Toast.LENGTH_LONG).show();
             return false;
         }
-        if(quantity < 1){
+        if (quantity < 1) {
             Toast.makeText(getActivity(), "La quantité doit être positive et supérieure ou égale à 1", Toast.LENGTH_LONG).show();
             return false;
         }
@@ -113,8 +161,9 @@ public class ProductCrud extends Crud<Product, ProductDialog> {
     }
 
     @Override
-    public void delete() {
-
+    public void delete(Product product) {
+        getRepository().remove(product);
+        reload();
     }
 
     @Override
@@ -126,6 +175,11 @@ public class ProductCrud extends Crud<Product, ProductDialog> {
         CourseActivity.getActivityReference().get().getListProducts().setAdapter(getAdapter());
     }
 
+    /**
+     * Gets sorted products in the course.
+     *
+     * @return the sorted list of products in the course
+     */
     public List<Product> getSortedProductInCourse() {
         List<Product> sortedProducts = getRepository().findAll();
         sortedProducts.sort((o1, o2) -> {
@@ -142,8 +196,18 @@ public class ProductCrud extends Crud<Product, ProductDialog> {
         return sortedProducts;
     }
 
+    /**
+     * The type ProductAdapter.
+     * Adapter class for displaying products in a list view.
+     */
     public static class ProductAdapter extends ArrayAdapter<Product> {
 
+        /**
+         * Instantiates a new ProductAdapter.
+         *
+         * @param activity    the activity
+         * @param productList the list of products
+         */
         public ProductAdapter(@NonNull Activity activity, @NonNull List<Product> productList) {
             super(activity.getApplicationContext(), 0, productList);
         }

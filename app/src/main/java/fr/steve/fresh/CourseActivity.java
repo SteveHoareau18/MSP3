@@ -15,6 +15,14 @@ import fr.steve.fresh.dialog.CourseDialog;
 import fr.steve.fresh.dialog.ProductDialog;
 import fr.steve.fresh.entity.Course;
 
+/**
+ * An activity that displays detailed information about a specific course and manages interactions
+ * with products related to that course.
+ * <p>
+ * This activity allows users to view and edit course details, add products to the course, and mark
+ * the course as finished. It also provides navigation back to the main activity.
+ * </p>
+ */
 public class CourseActivity extends Activity {
 
     private static WeakReference<CourseActivity> activityReference;
@@ -23,19 +31,47 @@ public class CourseActivity extends Activity {
     private ListView listProducts;
     private TextView titleProducts;
 
+    /**
+     * Gets a weak reference to the current instance of {@code CourseActivity}.
+     * <p>
+     * This method throws a {@link RuntimeException} if the activity reference is {@code null}.
+     * </p>
+     *
+     * @return a weak reference to the current {@code CourseActivity} instance
+     */
     public static WeakReference<CourseActivity> getActivityReference() {
         if (activityReference == null) throw new RuntimeException("Activity not found");
         return activityReference;
     }
 
+    /**
+     * Gets the {@code ListView} for displaying products.
+     *
+     * @return the {@code ListView} for products
+     */
     public ListView getListProducts() {
         return listProducts;
     }
 
+    /**
+     * Gets the {@code TextView} for displaying the title of the products list.
+     *
+     * @return the {@code TextView} for the products list title
+     */
     public TextView getTitleProducts() {
         return titleProducts;
     }
 
+    /**
+     * Initializes the activity by setting the content view and configuring UI elements and
+     * event listeners. Retrieves the course details and sets up interactions for modifying the
+     * course and managing its products.
+     * <p>
+     * This method also handles navigation back to the main activity.
+     * </p>
+     *
+     * @param savedInstanceState the previously saved instance state (if any)
+     */
     @SuppressLint("SetTextI18n")
     @Override
     protected void onCreate(Bundle savedInstanceState) {

@@ -9,7 +9,7 @@ public interface ICrud<T> {
 
     void update(Supplier<T> tSupplier);
 
-    void delete();
+    void delete(T t);
 
     void reload();
 }

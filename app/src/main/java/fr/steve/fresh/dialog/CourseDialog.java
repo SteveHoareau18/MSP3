@@ -16,14 +16,29 @@ import fr.steve.fresh.dialog.page.IPage;
 import fr.steve.fresh.entity.Course;
 import fr.steve.fresh.util.DateUtils;
 
+/**
+ * CourseDialog class handles various dialog interactions related to a Course object.
+ * This class allows creating, editing, and viewing details of a Course.
+ */
 public class CourseDialog extends Dialog<CourseDialog.Page> {
 
     private Course course;
 
+    /**
+     * Constructs a CourseDialog with the specified activity.
+     *
+     * @param activity the activity context
+     */
     public CourseDialog(Activity activity) {
         super(activity);
     }
 
+    /**
+     * Sets the Course object to be used in the dialog.
+     *
+     * @param course the Course object
+     * @return the current instance of CourseDialog
+     */
     public CourseDialog setCourse(Course course) {
         this.course = course;
         return this;
@@ -150,6 +165,9 @@ public class CourseDialog extends Dialog<CourseDialog.Page> {
         }
     }
 
+    /**
+     * Enum representing the different pages that can be opened in the CourseDialog.
+     */
     public enum Page implements IPage {
         MAIN,
         EDIT_DATE,

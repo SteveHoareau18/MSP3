@@ -12,11 +12,11 @@ import fr.steve.fresh.service.factory.Entity;
 
 public class Course extends Entity implements Serializable {
 
+    private final List<Product> productList;
     private String name;
     private Date createDate;
     private Date toDoDate, doDate;
     private Status status;
-    private List<Product> productList;
 
     public Course() {
         super();

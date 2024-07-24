@@ -12,8 +12,8 @@ public class ProductRepository extends Repository<Product> {
         super(new ArrayList<>());
     }
 
-    public Optional<Product> findByNameInCourse(String name, Course course){
-        return findAll().stream().filter(x->x.getName().equalsIgnoreCase(name) && x.getCourseId()==course.getId()).findFirst();
+    public Optional<Product> findByNameInCourse(String name, Course course) {
+        return findAll().stream().filter(x -> x.getName().equalsIgnoreCase(name) && x.getCourseId() == course.getId()).findFirst();
     }
 
     @Override
