@@ -11,7 +11,7 @@ import android.widget.Toast;
 import fr.steve.fresh.MainActivity;
 import fr.steve.fresh.dialog.dialog.Dialog;
 import fr.steve.fresh.dialog.page.IPage;
-import fr.steve.fresh.entity.Course;
+import fr.steve.fresh.entity.Errand;
 import fr.steve.fresh.entity.Product;
 
 /**
@@ -20,7 +20,7 @@ import fr.steve.fresh.entity.Product;
  */
 public class ProductDialog extends Dialog<ProductDialog.Page> {
 
-    private Course course;
+    private Errand errand;
     private Product product;
 
     /**
@@ -33,13 +33,13 @@ public class ProductDialog extends Dialog<ProductDialog.Page> {
     }
 
     /**
-     * Sets the course.
+     * Sets the errand.
      *
-     * @param course the course
+     * @param errand the errand
      * @return the ProductDialog instance
      */
-    public ProductDialog setCourse(Course course) {
-        this.course = course;
+    public ProductDialog setErrand(Errand errand) {
+        this.errand = errand;
         return this;
     }
 
@@ -84,7 +84,7 @@ public class ProductDialog extends Dialog<ProductDialog.Page> {
 
         switch (page) {
             case MAIN:
-                buildAlertDialog("Course: " + course.getName(), () ->
+                buildAlertDialog("Course: " + errand.getName(), () ->
                                 new LinearLayoutBuilder(getActivity()).add(() -> new LinearLayoutBuilder(getActivity()).add(() -> {
                                             TextView textView = new TextView(getActivity());
                                             textView.setText("Nom du produit: ");
@@ -120,7 +120,7 @@ public class ProductDialog extends Dialog<ProductDialog.Page> {
                                 }
                                 Toast.makeText(getActivity(), error.toString(), Toast.LENGTH_LONG).show();
                             } else {
-                                MainActivity.getActivityReference().get().getProductCrud(course).create(input_name.getText().toString(), Integer.parseInt(input_quantity.getText().toString()),
+                                MainActivity.getActivityReference().get().getProductCrud(errand).create(input_name.getText().toString(), Integer.parseInt(input_quantity.getText().toString()),
                                         input_unit.getText().toString());
                             }
                         }),
@@ -137,7 +137,7 @@ public class ProductDialog extends Dialog<ProductDialog.Page> {
                             return button;
                         }).build(),
                         "Marquer comme pris", (dialog, which) -> {
-                            MainActivity.getActivityReference().get().getProductCrud(course).update(
+                            MainActivity.getActivityReference().get().getProductCrud(errand).update(
                                     () -> {
                                         product.take();
                                         return product;
@@ -180,7 +180,7 @@ public class ProductDialog extends Dialog<ProductDialog.Page> {
                                     input_unit.setText(value);
                                     return input_unit;
                                 }).build(),
-                        "Enregistrer", (dialog, which) -> MainActivity.getActivityReference().get().getProductCrud(course).update(() -> {
+                        "Enregistrer", (dialog, which) -> MainActivity.getActivityReference().get().getProductCrud(errand).update(() -> {
                             if (input_name.getText().toString().isEmpty() || input_quantity.getText().toString().isEmpty()) {
                                 Toast.makeText(getActivity(), "Les champs nom et quantité sont requis.", Toast.LENGTH_LONG).show();
                                 dialog.cancel();

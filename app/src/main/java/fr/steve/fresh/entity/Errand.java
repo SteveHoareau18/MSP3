@@ -10,7 +10,7 @@ import java.util.List;
 import fr.steve.fresh.MainActivity;
 import fr.steve.fresh.service.factory.Entity;
 
-public class Course extends Entity implements Serializable {
+public class Errand extends Entity implements Serializable {
 
     private final List<Product> productList;
     private String name;
@@ -18,7 +18,7 @@ public class Course extends Entity implements Serializable {
     private Date toDoDate, doDate;
     private Status status;
 
-    public Course() {
+    public Errand() {
         super();
         this.createDate = new Date();
         this.status = Status.TO_DO;
@@ -78,9 +78,9 @@ public class Course extends Entity implements Serializable {
 
     @Override
     public int compareTo(Entity entity) {
-        if (entity instanceof Course) {
-            Course course = (Course) entity;
-            return this.createDate.compareTo(course.getCreateDate());
+        if (entity instanceof Errand) {
+            Errand errand = (Errand) entity;
+            return this.createDate.compareTo(errand.getCreateDate());
         }
         throw new RuntimeException("Unbound entity in Course");
     }

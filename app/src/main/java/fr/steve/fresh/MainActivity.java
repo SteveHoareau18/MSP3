@@ -14,28 +14,28 @@ import java.text.SimpleDateFormat;
 import java.util.Locale;
 import java.util.Map;
 
-import fr.steve.fresh.crud.CourseCrud;
+import fr.steve.fresh.crud.ErrandCrud;
 import fr.steve.fresh.crud.ProductCrud;
-import fr.steve.fresh.dialog.CourseDialog;
-import fr.steve.fresh.entity.Course;
+import fr.steve.fresh.dialog.ErrandDialog;
+import fr.steve.fresh.entity.Errand;
 import fr.steve.fresh.entity.Product;
-import fr.steve.fresh.repository.CourseRepository;
+import fr.steve.fresh.repository.ErrandRepository;
 import fr.steve.fresh.repository.ProductRepository;
 import fr.steve.fresh.service.manager.EntityManager;
 import fr.steve.fresh.util.Serializer;
 
 /**
  * The main activity of the application that serves as the entry point and central hub for managing
- * courses and products.
+ * errands and products.
  * <p>
- * This activity initializes the necessary components for handling courses and products, provides
- * functionality for creating courses, viewing and managing existing courses, and navigating to course
+ * This activity initializes the necessary components for handling errands and products, provides
+ * functionality for creating errands, viewing and managing existing errands, and navigating to errand
  * details. It also manages global references and settings for the application.
  * </p>
  */
 public class MainActivity extends Activity {
 
-    public final static Serializer<Course> COURSE_SERIALIZER = new Serializer<>();
+    public final static Serializer<Errand> COURSE_SERIALIZER = new Serializer<>();
     public final static Serializer<Product> PRODUCT_SERIALIZER = new Serializer<>();
 
     public static final String name = "fresh_db";
@@ -45,10 +45,10 @@ public class MainActivity extends Activity {
     private static final SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy à HH:mm", Locale.getDefault());
     private static EntityManager entityManager;
     private static WeakReference<MainActivity> activityReference;
-    private ListView listCourses;
+    private ListView listErrands;
     private TextView historicTitle;
-    private Button showCourses;
-    private CourseCrud courseCrud;
+    private Button showErrands;
+    private ErrandCrud errandCrud;
     private ProductCrud productCrud;
 
     /**
@@ -114,7 +114,7 @@ public class MainActivity extends Activity {
     }
 
     /**
-     * Gets the {@code TextView} for displaying the title of the historic courses.
+     * Gets the {@code TextView} for displaying the title of the historic errands.
      *
      * @return the {@code TextView} for the historic title
      */
@@ -123,47 +123,47 @@ public class MainActivity extends Activity {
     }
 
     /**
-     * Gets the {@code ListView} for displaying the list of courses.
+     * Gets the {@code ListView} for displaying the list of errands.
      *
-     * @return the {@code ListView} for courses
+     * @return the {@code ListView} for errands
      */
-    public ListView getListCourses() {
-        return listCourses;
+    public ListView getListErrands() {
+        return listErrands;
     }
 
     /**
-     * Gets the {@code CourseCrud} instance used for managing course-related operations.
+     * Gets the {@code ErrandCrud} instance used for managing errand-related operations.
      *
-     * @return the {@code CourseCrud} instance
+     * @return the {@code ErrandCrud} instance
      */
-    public CourseCrud getCourseCrud() {
-        return courseCrud;
+    public ErrandCrud getErrandCrud() {
+        return errandCrud;
     }
 
     /**
-     * Gets the {@code ProductCrud} instance used for managing products related to a specific course.
+     * Gets the {@code ProductCrud} instance used for managing products related to a specific errand.
      *
-     * @param course the course for which to manage products
+     * @param errand the errand for which to manage products
      * @return the {@code ProductCrud} instance
      */
-    public ProductCrud getProductCrud(Course course) {
-        productCrud.setCourse(course);
+    public ProductCrud getProductCrud(Errand errand) {
+        productCrud.setErrand(errand);
         return productCrud;
     }
 
     /**
-     * Gets the {@code Button} for displaying or hiding completed courses.
+     * Gets the {@code Button} for displaying or hiding completed errands.
      *
-     * @return the {@code Button} for showing courses
+     * @return the {@code Button} for showing errands
      */
-    public Button getShowCoursesButton() {
-        return showCourses;
+    public Button getShowErrandsButton() {
+        return showErrands;
     }
 
     /**
      * Initializes the activity, sets up UI elements, and configures event listeners.
      * <p>
-     * This method also initializes the {@code EntityManager}, {@code CourseCrud}, and {@code ProductCrud}
+     * This method also initializes the {@code EntityManager}, {@code ErrandCrud}, and {@code ProductCrud}
      * instances and sets up their interactions with the UI.
      * </p>
      *
@@ -179,26 +179,26 @@ public class MainActivity extends Activity {
 
         entityManager = new EntityManager();
 
-        listCourses = findViewById(R.id.list_courses);
+        listErrands = findViewById(R.id.list_courses);
         historicTitle = findViewById(R.id.textview_historic_title);
-        showCourses = findViewById(R.id.btn_show_doCourse);
+        showErrands = findViewById(R.id.btn_show_doCourse);
 
-        courseCrud = new CourseCrud(this, getEntityManager().getRepository(Course.class).orElseGet(CourseRepository::new));
+        errandCrud = new ErrandCrud(this, getEntityManager().getRepository(Errand.class).orElseGet(ErrandRepository::new));
         productCrud = new ProductCrud(this, getEntityManager().getRepository(Product.class).orElseGet(ProductRepository::new));
 
-        findViewById(R.id.btn_create_course).setOnClickListener(v -> courseCrud.getDialog().open(CourseDialog.Page.MAIN));
+        findViewById(R.id.btn_create_course).setOnClickListener(v -> errandCrud.getDialog().open(ErrandDialog.Page.MAIN));
 
-        showCourses.setOnClickListener(v -> courseCrud.reload());
+        showErrands.setOnClickListener(v -> errandCrud.reload());
     }
 
     /**
-     * Starts the {@code CourseActivity} to display details for a specific course.
+     * Starts the {@code ErrandActivity} to display details for a specific errand.
      *
-     * @param course the course to display
+     * @param errand the errand to display
      */
-    public void startCourseActivity(Course course) {
-        Intent intent = new Intent(MainActivity.this, CourseActivity.class);
-        intent.putExtra("course_id", course.getId());
+    public void startErrandActivity(Errand errand) {
+        Intent intent = new Intent(MainActivity.this, ErrandActivity.class);
+        intent.putExtra("errand_id", errand.getId());
         startActivity(intent);
     }
 

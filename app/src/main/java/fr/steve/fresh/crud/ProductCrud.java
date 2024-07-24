@@ -19,22 +19,22 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import fr.steve.fresh.CourseActivity;
+import fr.steve.fresh.ErrandActivity;
 import fr.steve.fresh.MainActivity;
 import fr.steve.fresh.crud.crud.Crud;
 import fr.steve.fresh.dialog.ProductDialog;
-import fr.steve.fresh.entity.Course;
+import fr.steve.fresh.entity.Errand;
 import fr.steve.fresh.entity.Product;
 import fr.steve.fresh.repository.ProductRepository;
 import fr.steve.fresh.service.factory.Repository;
 
 /**
  * The type ProductCrud.
- * Manages CRUD operations for products in a course.
+ * Manages CRUD operations for products in a errand.
  */
 public class ProductCrud extends Crud<Product, ProductDialog> {
 
-    private Course course;
+    private Errand errand;
 
     /**
      * Instantiates a new ProductCrud.
@@ -47,21 +47,21 @@ public class ProductCrud extends Crud<Product, ProductDialog> {
     }
 
     /**
-     * Sets the course.
+     * Sets the errand.
      *
-     * @param course the course
+     * @param errand the errand
      * @return the ProductCrud instance
      */
-    public ProductCrud setCourse(Course course) {
-        this.course = course;
+    public ProductCrud setErrand(Errand errand) {
+        this.errand = errand;
 
-        CourseActivity.getActivityReference().get().getListProducts().setAdapter(getAdapter());
+        ErrandActivity.getActivityReference().get().getListProducts().setAdapter(getAdapter());
 
-        CourseActivity.getActivityReference().get().getListProducts().setOnItemClickListener((parent, view, position, id) -> {
+        ErrandActivity.getActivityReference().get().getListProducts().setOnItemClickListener((parent, view, position, id) -> {
             Product selectedProduct = getSortedProductInCourse().get(position);
             if (selectedProduct.getStatus() == Product.Status.IS_TAKE) return;
 
-            getDialog().setCourse(course).setActivity(CourseActivity.getActivityReference().get())
+            getDialog().setErrand(errand).setActivity(ErrandActivity.getActivityReference().get())
                     .setProduct(selectedProduct).open(ProductDialog.Page.GET);
 
             reload();
@@ -82,9 +82,9 @@ public class ProductCrud extends Crud<Product, ProductDialog> {
         if (!canAddOrUpdate(name, quantity)) return;
 
         AtomicBoolean find = new AtomicBoolean(true);
-        Product product = ((ProductRepository) getRepository()).findByNameInCourse(name, course).orElseGet(() -> {
+        Product product = ((ProductRepository) getRepository()).findByNameInCourse(name, errand).orElseGet(() -> {
             find.set(false);
-            Product new_product = new Product(course.getId());
+            Product new_product = new Product(errand.getId());
             new_product.setName(name.trim());
             new_product.setQuantity(quantity);
             new_product.setUnit(unit.isEmpty() ? "" : unit);
@@ -96,7 +96,7 @@ public class ProductCrud extends Crud<Product, ProductDialog> {
         }
 
         getRepository().add(product);
-        Toast.makeText(getActivity(), "Le produit: " + product.getName() + " a été ajouté dans la course: " + course.getName(), Toast.LENGTH_SHORT).show();
+        Toast.makeText(getActivity(), "Le produit: " + product.getName() + " a été ajouté dans la course: " + errand.getName(), Toast.LENGTH_SHORT).show();
         reload();
     }
 
@@ -120,7 +120,7 @@ public class ProductCrud extends Crud<Product, ProductDialog> {
         if (!canAddOrUpdate(product.getName(), product.getQuantity())) return;
 
         AtomicBoolean find = new AtomicBoolean(true);
-        Product findProduct = ((ProductRepository) getRepository()).findByNameInCourse(product.getName(), course).orElseGet(() -> {
+        Product findProduct = ((ProductRepository) getRepository()).findByNameInCourse(product.getName(), errand).orElseGet(() -> {
             find.set(false);
             return product;
         });
@@ -169,16 +169,16 @@ public class ProductCrud extends Crud<Product, ProductDialog> {
     @Override
     public void reload() {
         boolean hasItems = !getSortedProductInCourse().isEmpty();
-        CourseActivity.getActivityReference().get().getTitleProducts().setText(hasItems ? "Liste des produits de la course: " : "Il n'y a pas de produit pour le moment");
-        CourseActivity.getActivityReference().get().getListProducts().setVisibility(hasItems ? View.VISIBLE : View.GONE);
+        ErrandActivity.getActivityReference().get().getTitleProducts().setText(hasItems ? "Liste des produits de la course: " : "Il n'y a pas de produit pour le moment");
+        ErrandActivity.getActivityReference().get().getListProducts().setVisibility(hasItems ? View.VISIBLE : View.GONE);
         setAdapter(new ProductCrud.ProductAdapter(getActivity(), getSortedProductInCourse()));
-        CourseActivity.getActivityReference().get().getListProducts().setAdapter(getAdapter());
+        ErrandActivity.getActivityReference().get().getListProducts().setAdapter(getAdapter());
     }
 
     /**
-     * Gets sorted products in the course.
+     * Gets sorted products in the errand.
      *
-     * @return the sorted list of products in the course
+     * @return the sorted list of products in the errand
      */
     public List<Product> getSortedProductInCourse() {
         List<Product> sortedProducts = getRepository().findAll();
@@ -192,7 +192,7 @@ public class ProductCrud extends Crud<Product, ProductDialog> {
                 return 1;
             }
         });
-        sortedProducts = sortedProducts.stream().filter(x -> x.getCourseId() == course.getId()).collect(Collectors.toList());
+        sortedProducts = sortedProducts.stream().filter(x -> x.getCourseId() == errand.getId()).collect(Collectors.toList());
         return sortedProducts;
     }
 
