@@ -13,34 +13,34 @@ import android.widget.Toast;
 import fr.steve.fresh.MainActivity;
 import fr.steve.fresh.dialog.dialog.Dialog;
 import fr.steve.fresh.dialog.page.IPage;
-import fr.steve.fresh.entity.Course;
+import fr.steve.fresh.entity.Errand;
 import fr.steve.fresh.util.DateUtils;
 
 /**
  * CourseDialog class handles various dialog interactions related to a Course object.
  * This class allows creating, editing, and viewing details of a Course.
  */
-public class CourseDialog extends Dialog<CourseDialog.Page> {
+public class ErrandDialog extends Dialog<ErrandDialog.Page> {
 
-    private Course course;
+    private Errand errand;
 
     /**
      * Constructs a CourseDialog with the specified activity.
      *
      * @param activity the activity context
      */
-    public CourseDialog(Activity activity) {
+    public ErrandDialog(Activity activity) {
         super(activity);
     }
 
     /**
      * Sets the Course object to be used in the dialog.
      *
-     * @param course the Course object
+     * @param errand the Course object
      * @return the current instance of CourseDialog
      */
-    public CourseDialog setCourse(Course course) {
-        this.course = course;
+    public ErrandDialog setCourse(Errand errand) {
+        this.errand = errand;
         return this;
     }
 
@@ -72,42 +72,42 @@ public class CourseDialog extends Dialog<CourseDialog.Page> {
                 break;
             case EDIT_DATE:
                 DatePicker datePicker = new DatePicker(getActivity());
-                buildAlertDialog("Course: " + course.getName(),
+                buildAlertDialog("Course: " + errand.getName(),
                         () -> new Dialog.LinearLayoutBuilder(getActivity()).add(() -> datePicker).build(),
                         "Suivant", ((dialog, which) -> {
-                            this.course.setToDoDate(DateUtils.toDate(datePicker));
-                            MainActivity.getActivityReference().get().getCourseCrud().update(() -> this.course);
+                            this.errand.setToDoDate(DateUtils.toDate(datePicker));
+                            MainActivity.getActivityReference().get().getCourseCrud().update(() -> this.errand);
                             open(Page.EDIT_TIME);
                         }),
                         "Annuler", ((dialog, which) -> dialog.cancel()));
                 break;
             case EDIT_TIME:
                 TimePicker timePicker = new TimePicker(getActivity());
-                buildAlertDialog("Course: " + course.getName(),
+                buildAlertDialog("Course: " + errand.getName(),
                         () -> new Dialog.LinearLayoutBuilder(getActivity()).add(() -> timePicker).build(),
                         "Suivant", ((dialog, which) -> {
-                            this.course.setToDoDate(DateUtils.toDate(this.course.getToDoDate(), timePicker));
-                            MainActivity.getActivityReference().get().getCourseCrud().update(() -> this.course);
+                            this.errand.setToDoDate(DateUtils.toDate(this.errand.getToDoDate(), timePicker));
+                            MainActivity.getActivityReference().get().getCourseCrud().update(() -> this.errand);
                             Toast.makeText(getActivity(), "Succés ! Votre course à été modifée !", Toast.LENGTH_LONG).show();
                         }),
                         "Précédent", ((dialog, which) -> open(Page.EDIT_DATE)));
                 break;
             case PRODUCTS:
-                MainActivity.getActivityReference().get().startCourseActivity(this.course);
+                MainActivity.getActivityReference().get().startCourseActivity(this.errand);
                 break;
             case EDIT_ALL:
-                if (course.getStatus() == Course.Status.FINISH) {
-                    buildAlertDialog("Course: " + course.getName(), () -> new Dialog.LinearLayoutBuilder(getActivity()).add(() -> {
+                if (errand.getStatus() == Errand.Status.FINISH) {
+                    buildAlertDialog("Course: " + errand.getName(), () -> new Dialog.LinearLayoutBuilder(getActivity()).add(() -> {
                                 TextView toDoDate = new TextView(getActivity());
-                                toDoDate.setText("A faire le " + MainActivity.getSimpleDateFormat().format(course.getToDoDate()));
+                                toDoDate.setText("A faire le " + MainActivity.getSimpleDateFormat().format(errand.getToDoDate()));
                                 return toDoDate;
                             }).add(() -> {
                                 TextView doDate = new TextView(getActivity());
-                                doDate.setText((course.getDoDate() == null ? "" : "Fait le " + MainActivity.getSimpleDateFormat().format(course.getDoDate())));
+                                doDate.setText((errand.getDoDate() == null ? "" : "Fait le " + MainActivity.getSimpleDateFormat().format(errand.getDoDate())));
                                 return doDate;
                             }).add(() -> {
                                 TextView createDate = new TextView(getActivity());
-                                createDate.setText("Crée le " + MainActivity.getSimpleDateFormat().format(course.getCreateDate()));
+                                createDate.setText("Crée le " + MainActivity.getSimpleDateFormat().format(errand.getCreateDate()));
                                 return createDate;
                             }).build(),
                             "OK", ((dialog, which) -> dialog.cancel()),
@@ -117,8 +117,8 @@ public class CourseDialog extends Dialog<CourseDialog.Page> {
                     TextView name = new TextView(getActivity());
                     name.setText("Nom: ");
                     EditText input_name = new EditText(getActivity());
-                    input_name.setText(course.getName());
-                    buildAlertDialog("Course: " + course.getName(),
+                    input_name.setText(errand.getName());
+                    buildAlertDialog("Course: " + errand.getName(),
                             () -> new Dialog.LinearLayoutBuilder(getActivity()).add(() -> name).add(() -> input_name)
                                     .add(() -> {
                                         Button button = new Button(getActivity());
@@ -129,7 +129,7 @@ public class CourseDialog extends Dialog<CourseDialog.Page> {
                                     }).add(() ->
                                             new Dialog.LinearLayoutBuilder(getActivity()).add(() -> {
                                                 TextView textView = new TextView(getActivity());
-                                                textView.setText("A faire le " + MainActivity.getSimpleDateFormat().format(course.getToDoDate()));
+                                                textView.setText("A faire le " + MainActivity.getSimpleDateFormat().format(errand.getToDoDate()));
                                                 return textView;
                                             }).add(() -> {
                                                 Button button = new Button(getActivity());
@@ -139,7 +139,7 @@ public class CourseDialog extends Dialog<CourseDialog.Page> {
                                                 return button;
                                             }).add(() -> {
                                                 TextView textView = new TextView(getActivity());
-                                                textView.setText("Crée le " + MainActivity.getSimpleDateFormat().format(course.getCreateDate()));
+                                                textView.setText("Crée le " + MainActivity.getSimpleDateFormat().format(errand.getCreateDate()));
                                                 return textView;
                                             }).add(() -> {
                                                 Button button = new Button(getActivity());
@@ -147,16 +147,16 @@ public class CourseDialog extends Dialog<CourseDialog.Page> {
                                                 button.setBackgroundColor(Color.rgb(62, 203, 118));
 
                                                 button.setOnClickListener(v -> MainActivity.getActivityReference().get().getCourseCrud().update(() -> {
-                                                    course.setStatus(Course.Status.FINISH);
+                                                    errand.setStatus(Errand.Status.FINISH);
                                                     Toast.makeText(this.getActivity(), "Succès, vous avez terminé votre course !", Toast.LENGTH_LONG).show();
-                                                    return course;
+                                                    return errand;
                                                 }));
                                                 return button;
                                             }).build())
                                     .build(),
                             "OK", ((dialog, which) -> {
-                                this.course.setName(input_name.getText().toString());
-                                MainActivity.getActivityReference().get().getCourseCrud().update(() -> this.course);
+                                this.errand.setName(input_name.getText().toString());
+                                MainActivity.getActivityReference().get().getCourseCrud().update(() -> this.errand);
                                 Toast.makeText(getActivity(), "Succés ! Votre course à été modifée !", Toast.LENGTH_LONG).show();
                             }),
                             "Annuler", ((dialog, which) -> dialog.cancel()));

@@ -11,9 +11,9 @@ import android.widget.Toast;
 
 import java.lang.ref.WeakReference;
 
-import fr.steve.fresh.dialog.CourseDialog;
+import fr.steve.fresh.dialog.ErrandDialog;
 import fr.steve.fresh.dialog.ProductDialog;
-import fr.steve.fresh.entity.Course;
+import fr.steve.fresh.entity.Errand;
 
 /**
  * An activity that displays detailed information about a specific course and manages interactions
@@ -23,10 +23,10 @@ import fr.steve.fresh.entity.Course;
  * the course as finished. It also provides navigation back to the main activity.
  * </p>
  */
-public class CourseActivity extends Activity {
+public class ErrandActivity extends Activity {
 
-    private static WeakReference<CourseActivity> activityReference;
-    private CourseDialog courseDialog;
+    private static WeakReference<ErrandActivity> activityReference;
+    private ErrandDialog errandDialog;
 
     private ListView listProducts;
     private TextView titleProducts;
@@ -39,7 +39,7 @@ public class CourseActivity extends Activity {
      *
      * @return a weak reference to the current {@code CourseActivity} instance
      */
-    public static WeakReference<CourseActivity> getActivityReference() {
+    public static WeakReference<ErrandActivity> getActivityReference() {
         if (activityReference == null) throw new RuntimeException("Activity not found");
         return activityReference;
     }
@@ -88,42 +88,42 @@ public class CourseActivity extends Activity {
 
         if (id == -1) throw new RuntimeException("Course not found");
 
-        courseDialog = new CourseDialog(this);
+        errandDialog = new ErrandDialog(this);
 
-        MainActivity.getEntityManager().getRepository(Course.class).ifPresent(repo -> {
-            Course course = repo.findAll().stream().filter(x -> x.getId() == id).findFirst().orElseThrow(() -> new RuntimeException("course not found"));
+        MainActivity.getEntityManager().getRepository(Errand.class).ifPresent(repo -> {
+            Errand errand = repo.findAll().stream().filter(x -> x.getId() == id).findFirst().orElseThrow(() -> new RuntimeException("course not found"));
             TextView course_name = findViewById(R.id.textview_course_name);
-            course_name.setText("Course: " + course.getName());
+            course_name.setText("Course: " + errand.getName());
             TextView create_date = findViewById(R.id.textview_create_date);
-            create_date.setText("Crée le: " + MainActivity.getSimpleDateFormat().format(course.getCreateDate()));
+            create_date.setText("Crée le: " + MainActivity.getSimpleDateFormat().format(errand.getCreateDate()));
             TextView todo_date = findViewById(R.id.textview_todo_date);
-            todo_date.setText("A faire le: " + MainActivity.getSimpleDateFormat().format(course.getToDoDate()));
+            todo_date.setText("A faire le: " + MainActivity.getSimpleDateFormat().format(errand.getToDoDate()));
             TextView do_date = findViewById(R.id.textview_do_date);
-            boolean is_do = course.getDoDate() != null;
-            String do_date_string = !is_do ? "Pas encore terminé" : "Terminé le: " + MainActivity.getSimpleDateFormat().format(course.getDoDate());
+            boolean is_do = errand.getDoDate() != null;
+            String do_date_string = !is_do ? "Pas encore terminé" : "Terminé le: " + MainActivity.getSimpleDateFormat().format(errand.getDoDate());
             do_date.setText(do_date_string);
             if (is_do) findViewById(R.id.btn_finish).setVisibility(View.GONE);
 
-            MainActivity.getActivityReference().get().getProductCrud(course).reload();
+            MainActivity.getActivityReference().get().getProductCrud(errand).reload();
 
-            findViewById(R.id.btn_modify).setOnClickListener(v -> courseDialog.setCourse(course).open(CourseDialog.Page.EDIT_ALL));
+            findViewById(R.id.btn_modify).setOnClickListener(v -> errandDialog.setCourse(errand).open(ErrandDialog.Page.EDIT_ALL));
 
             findViewById(R.id.btn_add_product).setOnClickListener(v ->
                     MainActivity.getActivityReference().get()
-                            .getProductCrud(course).setActivity(this)
-                            .getDialog().setCourse(course).setActivity(this)
+                            .getProductCrud(errand).setActivity(this)
+                            .getDialog().setCourse(errand).setActivity(this)
                             .open(ProductDialog.Page.MAIN));
 
             findViewById(R.id.btn_finish).setOnClickListener(v ->
                     MainActivity.getActivityReference().get().getCourseCrud().update(() -> {
-                        course.setStatus(Course.Status.FINISH);
+                        errand.setStatus(Errand.Status.FINISH);
                         Toast.makeText(this, "Succès, vous avez terminé votre course !", Toast.LENGTH_LONG).show();
-                        return course;
+                        return errand;
                     }));
         });
 
         findViewById(R.id.btn_back).setOnClickListener(v -> {
-            Intent intent = new Intent(CourseActivity.this, MainActivity.class);
+            Intent intent = new Intent(ErrandActivity.this, MainActivity.class);
             startActivity(intent);
         });
     }

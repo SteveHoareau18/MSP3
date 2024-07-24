@@ -16,7 +16,7 @@ import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 
 import fr.steve.fresh.dialog.ProductDialog;
-import fr.steve.fresh.entity.Course;
+import fr.steve.fresh.entity.Errand;
 import fr.steve.fresh.entity.Product;
 
 @RunWith(RobolectricTestRunner.class)
@@ -29,7 +29,7 @@ public class ProductDialogTest {
     private Activity activity;
 
     @Mock
-    private Course course;
+    private Errand errand;
 
     @Mock
     private Product product;
@@ -48,7 +48,7 @@ public class ProductDialogTest {
         MockitoAnnotations.initMocks(this);
         activity = Robolectric.buildActivity(Activity.class).create().get();
         productDialog = new ProductDialog(activity);
-        productDialog.setCourse(course);
+        productDialog.setCourse(errand);
         productDialog.setProduct(product);
 
         // Mock inputs

@@ -20,8 +20,8 @@ import java.util.stream.Collectors;
 import fr.steve.fresh.MainActivity;
 import fr.steve.fresh.R;
 import fr.steve.fresh.crud.crud.Crud;
-import fr.steve.fresh.dialog.CourseDialog;
-import fr.steve.fresh.entity.Course;
+import fr.steve.fresh.dialog.ErrandDialog;
+import fr.steve.fresh.entity.Errand;
 import fr.steve.fresh.service.factory.Repository;
 
 /**
@@ -29,9 +29,9 @@ import fr.steve.fresh.service.factory.Repository;
  * This class extends Crud and provides specific implementations
  * for creating, reading, updating, and deleting courses.
  */
-public class CourseCrud extends Crud<Course, CourseDialog> {
+public class ErrandCrud extends Crud<Errand, ErrandDialog> {
 
-    private Course.Status filter;
+    private Errand.Status filter;
 
     /**
      * Constructs a CourseCrud with the specified activity and repository.
@@ -39,8 +39,8 @@ public class CourseCrud extends Crud<Course, CourseDialog> {
      * @param activity         the activity context
      * @param courseRepository the repository for Course entities
      */
-    public CourseCrud(Activity activity, Repository<Course> courseRepository) {
-        super(courseRepository, activity, new CourseDialog(activity), new CourseAdapter(activity, courseRepository.findAll()));
+    public ErrandCrud(Activity activity, Repository<Errand> courseRepository) {
+        super(courseRepository, activity, new ErrandDialog(activity), new CourseAdapter(activity, courseRepository.findAll()));
 
         if (activity instanceof MainActivity) {
             MainActivity mainActivity = (MainActivity) activity;
@@ -49,19 +49,19 @@ public class CourseCrud extends Crud<Course, CourseDialog> {
             mainActivity.getListCourses().setOnItemClickListener((parent, view, position, id) -> {
                 setNextFilter();
 
-                Course selectedCourse = getSortedCourses().get(position);
+                Errand selectedErrand = getSortedCourses().get(position);
 
-                if (selectedCourse.getToDoDate() == null) {
-                    getDialog().setCourse(selectedCourse).open(CourseDialog.Page.EDIT_DATE);
+                if (selectedErrand.getToDoDate() == null) {
+                    getDialog().setCourse(selectedErrand).open(ErrandDialog.Page.EDIT_DATE);
                 } else {
-                    getDialog().setCourse(selectedCourse).open(CourseDialog.Page.EDIT_ALL);
+                    getDialog().setCourse(selectedErrand).open(ErrandDialog.Page.EDIT_ALL);
                 }
 
                 setNextFilter();
             });
         }
 
-        setFilter(Course.Status.TO_DO);
+        setFilter(Errand.Status.TO_DO);
 
         reload();
     }
@@ -79,19 +79,19 @@ public class CourseCrud extends Crud<Course, CourseDialog> {
      */
     @Override
     public void create(String name) {
-        Course course = new Course();
+        Errand errand = new Errand();
         String regex = "^(?=(?:.*[A-Za-z]){2})[A-Za-z0-9]{1,30}$";
         Pattern pattern = Pattern.compile(regex);
         Matcher matcher = pattern.matcher(name);
         boolean matches = matcher.matches();
         if (matches) {
-            course.setName(name.trim());
+            errand.setName(name.trim());
         } else {
-            course.setName("Course");
+            errand.setName("Course");
             Toast.makeText(getActivity(), "La course ne peut pas être nommé ainsi, par défaut elle est donc nommé: Course", Toast.LENGTH_LONG).show();
         }
-        getRepository().add(course);
-        Toast.makeText(getActivity(), "La course: " + course.getName() + " a été crée.", Toast.LENGTH_SHORT).show();
+        getRepository().add(errand);
+        Toast.makeText(getActivity(), "La course: " + errand.getName() + " a été crée.", Toast.LENGTH_SHORT).show();
         reload();
     }
 
@@ -105,7 +105,7 @@ public class CourseCrud extends Crud<Course, CourseDialog> {
      * @return the Course object if found, null otherwise
      */
     @Override
-    public Course read(int id) {
+    public Errand read(int id) {
         return getRepository().findOneById(id).orElseGet(() -> {
             Toast.makeText(getActivity().getApplicationContext(), "Course not found", Toast.LENGTH_LONG).show();
             return null;
@@ -122,23 +122,23 @@ public class CourseCrud extends Crud<Course, CourseDialog> {
      * @param courseSupplier a supplier that provides the Course object to be updated
      */
     @Override
-    public void update(Supplier<Course> courseSupplier) {
-        Course course = courseSupplier.get();
-        if (course.getName().isEmpty()) course.setName("Course");
-        if (course.getToDoDate() != null) {
+    public void update(Supplier<Errand> courseSupplier) {
+        Errand errand = courseSupplier.get();
+        if (errand.getName().isEmpty()) errand.setName("Course");
+        if (errand.getToDoDate() != null) {
             //start reveil;
         }
-        getRepository().add(course);
+        getRepository().add(errand);
         reload();
     }
 
     /**
      * Deletes the specified course.
      *
-     * @param course the Course object to be deleted
+     * @param errand the Course object to be deleted
      */
     @Override
-    public void delete(Course course) {
+    public void delete(Errand errand) {
         // Implementation missing in the provided code
     }
 
@@ -165,10 +165,10 @@ public class CourseCrud extends Crud<Course, CourseDialog> {
      * </p>
      */
     public void setNextFilter() {
-        if (filter == Course.Status.FINISH) {
-            setFilter(Course.Status.TO_DO);
+        if (filter == Errand.Status.FINISH) {
+            setFilter(Errand.Status.TO_DO);
         } else {
-            setFilter(Course.Status.FINISH);
+            setFilter(Errand.Status.FINISH);
         }
     }
 
@@ -177,7 +177,7 @@ public class CourseCrud extends Crud<Course, CourseDialog> {
      *
      * @return the current filter status
      */
-    public Course.Status getFilter() {
+    public Errand.Status getFilter() {
         return filter;
     }
 
@@ -186,7 +186,7 @@ public class CourseCrud extends Crud<Course, CourseDialog> {
      *
      * @param filter the filter status to be set
      */
-    public void setFilter(Course.Status filter) {
+    public void setFilter(Errand.Status filter) {
         this.filter = filter;
     }
 
@@ -198,9 +198,9 @@ public class CourseCrud extends Crud<Course, CourseDialog> {
      *
      * @return the sorted list of courses
      */
-    public List<Course> getSortedCourses() {
-        List<Course> sortedCourses = getRepository().findAll();
-        sortedCourses.sort((o1, o2) -> {
+    public List<Errand> getSortedCourses() {
+        List<Errand> sortedCours = getRepository().findAll();
+        sortedCours.sort((o1, o2) -> {
             if (o1.getToDoDate() != null && o2.getToDoDate() != null) {
                 return o1.getToDoDate().compareTo(o2.getToDoDate());
             } else if (o1.getToDoDate() == null && o2.getToDoDate() != null) {
@@ -211,8 +211,8 @@ public class CourseCrud extends Crud<Course, CourseDialog> {
             return o1.getCreateDate().compareTo(o2.getCreateDate());
         });
 
-        sortedCourses = sortedCourses.stream().filter(x -> x.getStatus().equals(filter)).collect(Collectors.toList());
-        return sortedCourses;
+        sortedCours = sortedCours.stream().filter(x -> x.getStatus().equals(filter)).collect(Collectors.toList());
+        return sortedCours;
     }
 
     /**
@@ -221,9 +221,9 @@ public class CourseCrud extends Crud<Course, CourseDialog> {
      * @return the title for the course list
      */
     public String getTitle() {
-        if (getFilter() == Course.Status.TO_DO) {
+        if (getFilter() == Errand.Status.TO_DO) {
             return "Prochaines courses à faire: ";
-        } else if (getFilter() == Course.Status.FINISH) {
+        } else if (getFilter() == Errand.Status.FINISH) {
             return "Courses terminées: ";
         }
         return "";
@@ -235,9 +235,9 @@ public class CourseCrud extends Crud<Course, CourseDialog> {
      * @return the button text for toggling the course list view
      */
     public String getButtonText() {
-        if (getFilter() == Course.Status.TO_DO) {
+        if (getFilter() == Errand.Status.TO_DO) {
             return "Voir les courses déjà effectuées";
-        } else if (getFilter() == Course.Status.FINISH) {
+        } else if (getFilter() == Errand.Status.FINISH) {
             return "Voir les courses à faire";
         }
         return "";
@@ -246,16 +246,16 @@ public class CourseCrud extends Crud<Course, CourseDialog> {
     /**
      * CourseAdapter class provides a custom adapter for displaying Course entities in a list view.
      */
-    public static class CourseAdapter extends ArrayAdapter<Course> {
+    public static class CourseAdapter extends ArrayAdapter<Errand> {
 
         /**
          * Constructs a CourseAdapter with the specified activity and list of courses.
          *
          * @param activity the activity context
-         * @param courses  the list of courses
+         * @param cours  the list of courses
          */
-        public CourseAdapter(@NonNull Activity activity, @NonNull List<Course> courses) {
-            super(activity.getApplicationContext(), 0, courses);
+        public CourseAdapter(@NonNull Activity activity, @NonNull List<Errand> cours) {
+            super(activity.getApplicationContext(), 0, cours);
         }
 
         /**
@@ -269,7 +269,7 @@ public class CourseCrud extends Crud<Course, CourseDialog> {
         @NonNull
         @Override
         public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-            Course course = getItem(position);
+            Errand errand = getItem(position);
 
             if (convertView == null) {
                 convertView = LayoutInflater.from(getContext()).inflate(android.R.layout.simple_list_item_2, parent, false);
@@ -278,10 +278,10 @@ public class CourseCrud extends Crud<Course, CourseDialog> {
             TextView courseNameTextView = convertView.findViewById(android.R.id.text1);
             TextView toDoDateTextView = convertView.findViewById(android.R.id.text2);
 
-            assert course != null;
+            assert errand != null;
 
-            courseNameTextView.setText(course.getName());
-            toDoDateTextView.setText(course.getToDoDate() != null ? "A faire le " + MainActivity.getSimpleDateFormat().format(course.getToDoDate()).replace(":", "h") : "Pas encore de date à faire");
+            courseNameTextView.setText(errand.getName());
+            toDoDateTextView.setText(errand.getToDoDate() != null ? "A faire le " + MainActivity.getSimpleDateFormat().format(errand.getToDoDate()).replace(":", "h") : "Pas encore de date à faire");
 
             return convertView;
         }

@@ -18,27 +18,27 @@ import org.robolectric.annotation.Config;
 
 import java.util.Date;
 
-import fr.steve.fresh.dialog.CourseDialog;
-import fr.steve.fresh.entity.Course;
+import fr.steve.fresh.dialog.ErrandDialog;
+import fr.steve.fresh.entity.Errand;
 
 @RunWith(RobolectricTestRunner.class)
 @Config(sdk = 28)
-public class CourseDialogTest {
+public class ErrandDialogTest {
 
-    private CourseDialog courseDialog;
+    private ErrandDialog errandDialog;
 
     @Mock
     private Activity activity;
 
     @Mock
-    private Course course;
+    private Errand errand;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         activity = Robolectric.buildActivity(Activity.class).create().get();
-        courseDialog = new CourseDialog(activity);
-        courseDialog.setCourse(course);
+        errandDialog = new ErrandDialog(activity);
+        errandDialog.setCourse(errand);
     }
 
     @Test
@@ -48,7 +48,7 @@ public class CourseDialogTest {
         inputName.setText("New Course");
 
         // Act
-        courseDialog.open(CourseDialog.Page.MAIN);
+        errandDialog.open(ErrandDialog.Page.MAIN);
 
         // Assert
         assertEquals("New Course", inputName.getText().toString());
@@ -57,16 +57,16 @@ public class CourseDialogTest {
     @Test
     public void testOpenEditAllPage_shouldShowCourseDetails() {
         // Arrange
-        when(course.getName()).thenReturn("Test Course");
-        when(course.getToDoDate()).thenReturn(new Date());
-        when(course.getCreateDate()).thenReturn(new Date());
+        when(errand.getName()).thenReturn("Test Course");
+        when(errand.getToDoDate()).thenReturn(new Date());
+        when(errand.getCreateDate()).thenReturn(new Date());
 
         // Act
-        courseDialog.open(CourseDialog.Page.EDIT_ALL);
+        errandDialog.open(ErrandDialog.Page.EDIT_ALL);
 
         // Assert
-        assertEquals("Test Course", course.getName());
-        assertNotNull(course.getToDoDate());
-        assertNotNull(course.getCreateDate());
+        assertEquals("Test Course", errand.getName());
+        assertNotNull(errand.getToDoDate());
+        assertNotNull(errand.getCreateDate());
     }
 }

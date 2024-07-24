@@ -2,9 +2,9 @@ package fr.steve.fresh.service.manager;
 
 import java.util.Optional;
 
-import fr.steve.fresh.entity.Course;
+import fr.steve.fresh.entity.Errand;
 import fr.steve.fresh.entity.Product;
-import fr.steve.fresh.repository.CourseRepository;
+import fr.steve.fresh.repository.ErrandRepository;
 import fr.steve.fresh.repository.ProductRepository;
 import fr.steve.fresh.service.factory.Entity;
 import fr.steve.fresh.service.factory.Repository;
@@ -13,19 +13,19 @@ import fr.steve.fresh.service.factory.Repository;
  * Manager class for handling repositories for different entity types.
  * <p>
  * The EntityManager provides access to specific repositories based on the entity type requested.
- * It currently supports {@link Course} and {@link Product} entities through their respective repositories.
+ * It currently supports {@link Errand} and {@link Product} entities through their respective repositories.
  * </p>
  */
 public class EntityManager {
 
-    private final CourseRepository courseRepository;
+    private final ErrandRepository errandRepository;
     private final ProductRepository productRepository;
 
     /**
      * Constructs an EntityManager with instances of CourseRepository and ProductRepository.
      */
     public EntityManager() {
-        this.courseRepository = new CourseRepository();
+        this.errandRepository = new ErrandRepository();
         this.productRepository = new ProductRepository();
     }
 
@@ -33,7 +33,7 @@ public class EntityManager {
      * Retrieves the repository associated with the specified entity class.
      * <p>
      * This method returns an {@link Optional} containing the appropriate repository if the entity class
-     * matches one of the supported types ({@link Course} or {@link Product}). If the class does not match
+     * matches one of the supported types ({@link Errand} or {@link Product}). If the class does not match
      * any supported type, it returns an empty Optional.
      * </p>
      *
@@ -45,8 +45,8 @@ public class EntityManager {
      */
     @SuppressWarnings("unchecked")
     public <T extends Entity, R extends Repository<T>> Optional<R> getRepository(Class<T> clazz) {
-        if (clazz == Course.class) {
-            return Optional.of((R) courseRepository);
+        if (clazz == Errand.class) {
+            return Optional.of((R) errandRepository);
         } else if (clazz == Product.class) {
             return Optional.of((R) productRepository);
         }

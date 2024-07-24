@@ -14,12 +14,12 @@ import java.text.SimpleDateFormat;
 import java.util.Locale;
 import java.util.Map;
 
-import fr.steve.fresh.crud.CourseCrud;
+import fr.steve.fresh.crud.ErrandCrud;
 import fr.steve.fresh.crud.ProductCrud;
-import fr.steve.fresh.dialog.CourseDialog;
-import fr.steve.fresh.entity.Course;
+import fr.steve.fresh.dialog.ErrandDialog;
+import fr.steve.fresh.entity.Errand;
 import fr.steve.fresh.entity.Product;
-import fr.steve.fresh.repository.CourseRepository;
+import fr.steve.fresh.repository.ErrandRepository;
 import fr.steve.fresh.repository.ProductRepository;
 import fr.steve.fresh.service.manager.EntityManager;
 import fr.steve.fresh.util.Serializer;
@@ -35,7 +35,7 @@ import fr.steve.fresh.util.Serializer;
  */
 public class MainActivity extends Activity {
 
-    public final static Serializer<Course> COURSE_SERIALIZER = new Serializer<>();
+    public final static Serializer<Errand> COURSE_SERIALIZER = new Serializer<>();
     public final static Serializer<Product> PRODUCT_SERIALIZER = new Serializer<>();
 
     public static final String name = "fresh_db";
@@ -48,7 +48,7 @@ public class MainActivity extends Activity {
     private ListView listCourses;
     private TextView historicTitle;
     private Button showCourses;
-    private CourseCrud courseCrud;
+    private ErrandCrud errandCrud;
     private ProductCrud productCrud;
 
     /**
@@ -136,18 +136,18 @@ public class MainActivity extends Activity {
      *
      * @return the {@code CourseCrud} instance
      */
-    public CourseCrud getCourseCrud() {
-        return courseCrud;
+    public ErrandCrud getCourseCrud() {
+        return errandCrud;
     }
 
     /**
      * Gets the {@code ProductCrud} instance used for managing products related to a specific course.
      *
-     * @param course the course for which to manage products
+     * @param errand the course for which to manage products
      * @return the {@code ProductCrud} instance
      */
-    public ProductCrud getProductCrud(Course course) {
-        productCrud.setCourse(course);
+    public ProductCrud getProductCrud(Errand errand) {
+        productCrud.setCourse(errand);
         return productCrud;
     }
 
@@ -183,22 +183,22 @@ public class MainActivity extends Activity {
         historicTitle = findViewById(R.id.textview_historic_title);
         showCourses = findViewById(R.id.btn_show_doCourse);
 
-        courseCrud = new CourseCrud(this, getEntityManager().getRepository(Course.class).orElseGet(CourseRepository::new));
+        errandCrud = new ErrandCrud(this, getEntityManager().getRepository(Errand.class).orElseGet(ErrandRepository::new));
         productCrud = new ProductCrud(this, getEntityManager().getRepository(Product.class).orElseGet(ProductRepository::new));
 
-        findViewById(R.id.btn_create_course).setOnClickListener(v -> courseCrud.getDialog().open(CourseDialog.Page.MAIN));
+        findViewById(R.id.btn_create_course).setOnClickListener(v -> errandCrud.getDialog().open(ErrandDialog.Page.MAIN));
 
-        showCourses.setOnClickListener(v -> courseCrud.reload());
+        showCourses.setOnClickListener(v -> errandCrud.reload());
     }
 
     /**
      * Starts the {@code CourseActivity} to display details for a specific course.
      *
-     * @param course the course to display
+     * @param errand the course to display
      */
-    public void startCourseActivity(Course course) {
-        Intent intent = new Intent(MainActivity.this, CourseActivity.class);
-        intent.putExtra("course_id", course.getId());
+    public void startCourseActivity(Errand errand) {
+        Intent intent = new Intent(MainActivity.this, ErrandActivity.class);
+        intent.putExtra("course_id", errand.getId());
         startActivity(intent);
     }
 
