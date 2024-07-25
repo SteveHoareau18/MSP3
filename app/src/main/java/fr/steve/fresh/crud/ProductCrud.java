@@ -117,6 +117,21 @@ public class ProductCrud extends Crud<Product, ProductDialog> {
         });
     }
 
+    /**
+     * Updates a product in the repository.
+     *
+     * This method receives a product supplier, extracts the product from the supplier, and checks if the product can be added or updated based on the specified criteria (name, quantity, unit). If the product is valid, the following operations are performed:
+     * <ul>
+     *     <li>Trims any extra whitespace around the product's name and unit.</li>
+     *     <li>Searches for an existing product with the same name in the repository.</li>
+     *     <li>If an existing product is found with a different ID, it is deleted and its quantity is added to the current product's quantity.</li>
+     *     <li>Adds or updates the product in the repository.</li>
+     *     <li>Displays a confirmation message to the user.</li>
+     *     <li>Reloads the data after the update.</li>
+     * </ul>
+     *
+     * @param productSupplier A supplier of the product. The product provided by this supplier is the one that will be updated.
+     */
     @Override
     public void update(Supplier<Product> productSupplier) {
         Product product = productSupplier.get();
