@@ -81,18 +81,22 @@ public class ProductCrud extends Crud<Product, ProductDialog> {
     public void create(String name, int quantity, String unit) {
         if (!canAddOrUpdate(name, quantity, unit)) return;
 
+        unit = unit.isEmpty()?"":unit.trim();
+
         AtomicBoolean find = new AtomicBoolean(true);
+        String finalUnit = unit;
         Product product = ((ProductRepository) getRepository()).findByNameInCourse(name, errand).orElseGet(() -> {
             find.set(false);
             Product new_product = new Product(errand.getId());
             new_product.setName(name.trim());
             new_product.setQuantity(quantity);
-            new_product.setUnit(unit.isEmpty() ? "" : unit);
+            new_product.setUnit(finalUnit);
             return new_product;
         });
 
         if (find.get()) {
             product.setQuantity(product.getQuantity() + quantity);
+            product.setUnit(unit);
         }
 
         getRepository().add(product);
@@ -118,6 +122,9 @@ public class ProductCrud extends Crud<Product, ProductDialog> {
         Product product = productSupplier.get();
 
         if (!canAddOrUpdate(product.getName(), product.getQuantity(), product.getUnit())) return;
+
+        product.setUnit(product.getUnit().trim());
+        product.setName(product.getName().trim());
 
         AtomicBoolean find = new AtomicBoolean(true);
         Product findProduct = ((ProductRepository) getRepository()).findByNameInCourse(product.getName(), errand).orElseGet(() -> {
@@ -147,11 +154,11 @@ public class ProductCrud extends Crud<Product, ProductDialog> {
      */
     public boolean canAddOrUpdate(String name, int quantity, String unit) {
         name = name.trim();
-        String regex = "^(?=(?:.*[A-Za-z]){2})[A-Za-z0-9]{1,30}$";
+        String regex = "^(?=(?:.*[A-Za-z]){2})[A-Za-z0-9 ]{1,30}$";
         Pattern pattern = Pattern.compile(regex);
         Matcher matcherName = pattern.matcher(name);
 
-        String regexUnit = "^(?=.*[A-Za-z])[A-Za-z0-9]{1,15}$";
+        String regexUnit = "^(?=.*[A-Za-z])[A-Za-z0-9 ]{1,15}$";
         Pattern patternUnit = Pattern.compile(regexUnit);
         Matcher matcherUnit = patternUnit.matcher(unit);
 
