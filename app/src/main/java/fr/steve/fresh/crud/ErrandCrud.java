@@ -81,7 +81,7 @@ public class ErrandCrud extends Crud<Errand, ErrandDialog> {
     @Override
     public void create(String name) {
         Errand errand = new Errand();
-        String regex = "^(?=(?:.*[A-Za-z]){2})[A-Za-z0-9]{1,30}$";
+        String regex = "^(?=(?:.*[A-Za-z]){2})[A-Za-z0-9 ]{1,30}$";
         Pattern pattern = Pattern.compile(regex);
         Matcher matcher = pattern.matcher(name);
         boolean matches = matcher.matches();
